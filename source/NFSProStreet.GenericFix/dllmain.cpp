@@ -573,39 +573,7 @@ void Init()
             injector::WriteMemory(dword_7E2C9A, 0x703A92CC, true); //"Press START button" (PlayStation)
     }
 
-    if (fLeftStickDeadzone)
-    {
-        // DInput [ 0 32767 | 32768 65535 ]
-        fLeftStickDeadzone /= 200.0f;
-
-        auto pattern = hook::pattern("89 86 34 02 00 00 8D 45 D4"); //0x892ACD 0x892ADF
-        struct DeadzoneHookX
-        {
-            void operator()(injector::reg_pack& regs)
-            {
-                double dStickState = (double)regs.eax / 65535.0;
-                dStickState -= 0.5;
-                if (std::abs(dStickState) <= fLeftStickDeadzone)
-                    dStickState = 0.0;
-                dStickState += 0.5;
-                *(uint32_t*)(regs.esi + 0x234) = (uint32_t)(dStickState * 65535.0);
-            }
-        }; injector::MakeInline<DeadzoneHookX>(pattern.get_first(0), pattern.get_first(6));
-
-        struct DeadzoneHookY
-        {
-            void operator()(injector::reg_pack& regs)
-            {
-                double dStickState = (double)regs.edx / 65535.0;
-                dStickState -= 0.5;
-                if (std::abs(dStickState) <= fLeftStickDeadzone)
-                    dStickState = 0.0;
-                dStickState += 0.5;
-                *(uint32_t*)(regs.esi + 0x238) = (uint32_t)(dStickState * 65535.0);
-            }
-        }; injector::MakeInline<DeadzoneHookY>(pattern.get_first(18 + 0), pattern.get_first(18 + 6));
-    }
-
+   
     auto GetFolderPathpattern = hook::pattern("50 6A 00 6A 00 68 ? 80 00 00 6A 00");
     if (bWriteSettingsToFile && injector::GetBranchDestination(GetFolderPathpattern.get(0).get<uintptr_t>(14), true).as_int() == 0)
     {
