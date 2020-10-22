@@ -394,18 +394,7 @@ void Init()
             }
         }; injector::MakeInline<GammaHook>(pattern.count(1).get(0).get<uint32_t>(9), pattern.count(1).get(0).get<uint32_t>(17)); // 4B3E89
     }
-
-    if (bSkipIntro)
-    {
-        // EA Bumper
-        uint32_t* dword_6FC24A = hook::pattern("68 ? ? ? ? 6A ? FF D2 D9 EE").count(1).get(0).get<uint32_t>(1);
-        injector::WriteMemory(dword_6FC24A, &"SkipThis", true);
-        
-        // Attract
-        uint32_t* dword_6FC264 = hook::pattern("68 ? ? ? ? 6A ? 8B CE FF D2").count(1).get(0).get<uint32_t>(1);
-        injector::WriteMemory(dword_6FC264, &"SkipThis", true);
-    }
-
+    
     if (nWindowedMode)
     {
         auto pattern = hook::pattern("89 5D 3C 89 5D 18 89 5D 44"); //0x708379
